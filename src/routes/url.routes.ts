@@ -1,9 +1,8 @@
 import { Router } from "express";
+import { createUrlController } from "../controllers/url.controller.js";
 
 const router = Router();
 
-router.get('/', (req, res) => {
-    res.send('Hello World');
-});
+router.post('/', createUrlController);
 
 export default router;
