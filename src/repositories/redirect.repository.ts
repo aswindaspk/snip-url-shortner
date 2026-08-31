@@ -1,4 +1,5 @@
 import { prisma } from "../config/db/prisma.js";
+import { AppError } from "../error/AppError.js";
 
 export async function getOriginalUrlFromRepository(shortCode: string) {
     const originalUrl = await prisma.url.findUnique(
@@ -8,6 +9,8 @@ export async function getOriginalUrlFromRepository(shortCode: string) {
             }
         }
     );
-    console.log("originalUrl", originalUrl?.longUrl);
+    if (!originalUrl) {
+        throw new AppError("Original URL not found", 404, false);
+    }
     return originalUrl?.longUrl || null;
 }
