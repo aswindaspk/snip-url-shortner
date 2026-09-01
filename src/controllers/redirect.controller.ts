@@ -6,7 +6,7 @@ import { AppError } from "../error/AppError.js";
 export async function redirectController(req: Request<RedirectParams>, res: Response) {
     const { shortCode } = req.params;
     if (!shortCode) {
-        return res.status(400).json({ message: "Short code is required" });
+        throw new AppError("Short code is required", 400, false);
     }
     const originalUrl = await getOriginalUrl(shortCode);
     if (!originalUrl) {
