@@ -5,7 +5,6 @@ export function errorMiddleware(err: Error, req: Request, res: Response, next: N
     if (res.headersSent) {
         return next(err);
     }
-
     if (err instanceof AppError) {
         return res.status(err.statusCode).json({
             success: false,

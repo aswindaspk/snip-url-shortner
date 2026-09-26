@@ -21,6 +21,14 @@ services:
       redis:
         condition: service_healthy
 
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+        - action: rebuild
+          path: package.json
+
   postgres:
     image: postgres:18
     restart: unless-stopped
