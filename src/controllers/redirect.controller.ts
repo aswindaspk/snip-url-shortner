@@ -6,11 +6,8 @@ import { AppError } from "../error/AppError.js";
 export async function redirectController(req: Request<RedirectParams>, res: Response) {
     const { shortCode } = req.params;
     if (!shortCode) {
-        throw new AppError("Short code is required", 400, false);
+        throw new AppError("Short code is required", 400);
     }
-    const originalUrl = await getOriginalUrl(shortCode);
-    if (!originalUrl) {
-        throw new AppError("Original URL not found", 404, false);
-    }
-    return res.redirect(originalUrl);
+    const originalUrl = await getOriginalUrl(shortCode);// Log the original URL for debugging
+    return res.redirect(originalUrl!);
 }

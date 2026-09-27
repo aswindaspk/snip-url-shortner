@@ -10,7 +10,7 @@ export async function getOriginalUrlFromRepository(shortCode: string) {
         }
     );
     if (!originalUrl) {
-        throw new AppError("Original URL not found", 404, false);
+        throw new AppError("Original URL not found", 404);
     }
-    return originalUrl?.longUrl || null;
+    return originalUrl?.longUrl;
 }
