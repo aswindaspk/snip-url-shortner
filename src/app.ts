@@ -17,6 +17,4 @@ app.all('/{*splat}', (req, res, next) => {
 });
 
 app.use(errorMiddleware);
-
-
 export default app;
