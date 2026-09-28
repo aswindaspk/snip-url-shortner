@@ -1,3 +1,4 @@
+import bloomFilterSyncCheck from "../../utils/bloomFilterRedisSync.js";
 import { prisma } from "./prisma.js";
 import { redis } from "./redis.js";
 
@@ -9,6 +10,8 @@ export async function checkDatabaseConnection() {
         const redisResponse = await redis.ping();
         if (redisResponse === 'PONG') {
             console.log('Redis connected.');
+            await bloomFilterSyncCheck();
+            
         }
     } catch (error) {
         console.error("Error connecting to database/ Redis:", error);
