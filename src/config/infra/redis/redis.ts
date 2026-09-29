@@ -1,5 +1,6 @@
 import { createClient } from 'redis';
-import { env } from '../env.js';
+import { env } from '../../env.js';
+
 
 const REDIS_URL = env.REDIS_URL;
 if (!REDIS_URL) {
@@ -10,6 +11,4 @@ export const redis = createClient({
     url: REDIS_URL
 });
 
-redis.on('error', (err) => console.error('Redis Client Error', err));
-
-await redis.connect();
+redis.on('error', (err) => console.error('Redis Client Error'));

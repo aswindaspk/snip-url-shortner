@@ -3,7 +3,8 @@ import type { createUrlInput } from "../types/url.types.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import { AppError } from "../error/AppError.js";
 import generateShortCode from "../utils/generateShortcode.util.js";
-import { redis } from "../config/db/redis.js";
+import { redis } from "../config/infra/redis/redis.js";
+
 
 
 export async function createUrlService(longUrl: string, alias?: string) {

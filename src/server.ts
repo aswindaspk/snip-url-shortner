@@ -1,6 +1,6 @@
 import app from './app.js';
-import { checkDatabaseConnection } from './config/db/checkDatabase.js';
 import { env } from './config/env.js';
+import initialize from './config/infra/initialize.js';
 
 let server: ReturnType<typeof app.listen>;
 
@@ -27,7 +27,7 @@ process.on('unhandledRejection', (err) => {
 
 const startServer = async () => {
     try {
-        await checkDatabaseConnection();
+        await initialize();
 
         server = app.listen(env.PORT, () => {
             console.log(`Server is running on port ${env.PORT}`);

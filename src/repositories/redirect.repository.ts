@@ -1,4 +1,4 @@
-import { prisma } from "../config/db/prisma.js";
+import { prisma } from "../config/infra/db/prisma.js";
 import { AppError } from "../error/AppError.js";
 
 export async function getOriginalUrlFromRepository(shortCode: string) {

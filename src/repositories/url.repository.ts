@@ -1,4 +1,4 @@
-import { prisma } from "../config/db/prisma.js";
+import { prisma } from "../config/infra/db/prisma.js";
 import type { createUrlInput } from "../types/url.types.js";
 
 export async function createUrl (data: createUrlInput) {
