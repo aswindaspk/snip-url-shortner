@@ -4,7 +4,7 @@ import initialize from './config/infra/initialize.js';
 
 let server: ReturnType<typeof app.listen>;
 
-const shutdown = (reason: string, error?: unknown) => {
+function shutdown(reason: string, error?: unknown) {
     console.error(reason, error);
 
     if (server) {

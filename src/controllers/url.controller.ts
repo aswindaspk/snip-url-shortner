@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { createUrlService } from "../services/url.service.js";
 import { AppError } from "../error/AppError.js";
 interface UrlInput {
@@ -6,7 +6,7 @@ interface UrlInput {
     alias?: string;
 }
 
-export async function createUrlController (req: Request, res: Response) {
+export async function createUrlController (req: Request, res: Response, next: NextFunction) {
     const {longUrl, alias}: UrlInput = req.body
     if (!longUrl) {
         throw new AppError("Long URL is required", 400);
@@ -15,4 +15,8 @@ export async function createUrlController (req: Request, res: Response) {
     res.status(201).json({
         shortUrl
     })
+}
+
+export async function getUrlDetailsController(req: Request, res: Response, next: NextFunction) {
+    const {shortUrl} = req.body
 }

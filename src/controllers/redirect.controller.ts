@@ -1,7 +1,10 @@
 import type { Request, Response } from "express";
 import { getOriginalUrl } from "../services/redirect.service.js";
-import type { RedirectParams } from "../types/redirect.types.js";
 import { AppError } from "../error/AppError.js";
+
+type RedirectParams = {
+  shortCode: string;
+};
 
 export async function redirectController(req: Request<RedirectParams>, res: Response) {
     const { shortCode } = req.params;
