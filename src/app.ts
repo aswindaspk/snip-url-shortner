@@ -3,9 +3,16 @@ import urlRoutes from './routes/url.routes.js';
 import redirectRoutes from './routes/redirect.routes.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
 import { AppError } from './error/AppError.js';
+import { toNodeHandler } from 'better-auth/node';
+import { auth } from './utils/auth.js';
+import cors from 'cors';
+
 
 //setting up app
 const app = express();
+app.use(cors())
+//better auth setup
+app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use(express.json());
 
 //routes and middlewares

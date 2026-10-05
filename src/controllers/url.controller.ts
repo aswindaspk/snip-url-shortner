@@ -20,3 +20,7 @@ export async function createUrlController (req: Request, res: Response, next: Ne
 export async function getUrlDetailsController(req: Request, res: Response, next: NextFunction) {
     const {shortUrl} = req.body
 }
+
+export async function deleteUrlController(req: Request, res: Response, next: NextFunction) {
+    
+}
