@@ -14,6 +14,8 @@ model Url {
   createdAt  DateTime @default(now())
   clickCount Int      @default(0)
   isActive   Boolean  @default(true)
+  userId     String? 
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -26,6 +28,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]
+  urls          Url[]
 
   @@map("user")
 }

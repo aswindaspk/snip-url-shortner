@@ -9,29 +9,24 @@ import { env } from "../config/env.js";
 
 export interface createUrlInput {
     longUrl: string,
-    shortCode: string
+    shortCode: string,
+    userId?: string
 }
 
-export async function createUrlService(longUrl: string, alias?: string) {
+export async function createUrlService(longUrl: string, alias?: string, userId?: string) {
 
     if (alias) {
         // check if alias already exists in the database
         if (!isRedisAvailable || !isBloomFilterAvailable) throw new AppError('This feature is not available now', 500)
-        const isAliasExists = await redis.sendCommand(["BF.EXISTS", "shortcodes", alias]);
-        if (Number(isAliasExists) === 1) {
+        const aliasExists = await redis.sendCommand(["BF.EXISTS", "shortcodes", alias]);
+        if (Number(aliasExists) === 1) {
             throw new AppError("Alias already exists", 400);
         }
-        const dataToInsert: createUrlInput = {
-            longUrl,
-            shortCode: alias
-        }
         try {
-            const result = await createUrl(dataToInsert);
-            //generate qrcode
-            const qrCode = await generateQrCode(env.baseUrl+'/'+alias);
+            const result = await sendData(longUrl, alias, userId);
             //syncs db to redis
             await redis.sendCommand(["BF.ADD", "shortcodes", alias]);
-            return {...result, qrCode};
+            return result;
         } catch (error) {
             throw new AppError('Could not generate short code', 500)
         }
@@ -41,17 +36,11 @@ export async function createUrlService(longUrl: string, alias?: string) {
 
         for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
             const shortCode = generateShortCode();
-            const dataToInsert: createUrlInput = {
-                longUrl,
-                shortCode
-            }
             try {
-                const result = await createUrl(dataToInsert);
-                //generate qrcode
-                const qrCode = await generateQrCode(env.baseUrl+'/'+shortCode);
+                const result = await sendData(longUrl, shortCode, userId);
                 //syncs db to redis
                 if (isBloomFilterAvailable && isRedisAvailable) await redis.sendCommand(["BF.ADD", "shortcodes", shortCode]);
-                return {...result, qrCode};
+                return result;
             } catch (error) {
                 //retries if the shortCode is already in use (unique constraint violation)
                 if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
@@ -64,4 +53,30 @@ export async function createUrlService(longUrl: string, alias?: string) {
 
     throw new AppError("Failed to generate a unique short code after multiple attempts", 500);
 
+}
+
+
+
+async function sendData (longUrl: string, shortCode: string, userId?: string) {
+    if (userId) {
+        const dataToInsert: createUrlInput = {
+            longUrl,
+            shortCode,
+            userId
+        }
+        const result = await createUrl(dataToInsert);
+        //generate qr code
+        const qrCode = await generateQrCode(env.baseUrl+'/'+shortCode);
+        return {...result, qrCode};
+    }
+    else {
+        const dataToInsert: createUrlInput = {
+            longUrl,
+            shortCode
+        }
+        const result = await createUrl(dataToInsert);
+        //generate qr code
+        const qrCode = await generateQrCode(env.baseUrl+'/'+shortCode);
+        return {...result, qrCode};
+    }
 }
