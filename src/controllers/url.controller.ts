@@ -22,5 +22,9 @@ export async function getUrlDetailsController(req: Request, res: Response, next:
 }
 
 export async function deleteUrlController(req: Request, res: Response, next: NextFunction) {
+
+}
+
+export async function updateUrlController(req: Request, res: Response, next: NextFunction) {
     
 }

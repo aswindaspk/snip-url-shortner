@@ -11,7 +11,6 @@ export async function isAuthenticated(req: Request, res: Response, next: NextFun
     if (!session) {
         return next(new AppError("Unauthorized", 401));
     }
-
     req.user = session.user;
     next();
 }
