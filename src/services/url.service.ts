@@ -1,4 +1,4 @@
-import { createUrl, deleteUrlRepository } from "../repositories/url.repository.js";
+import { createUrl, deleteUrlRepository, updateUrlRepository } from "../repositories/url.repository.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import { AppError } from "../error/AppError.js";
 import generateShortCode from "../utils/generateShortcode.util.js";
@@ -6,7 +6,7 @@ import { redis, SHORTCODE_CUCKOO_FILTER_KEY } from "../config/infra/redis/redis.
 import { isCuckooFilterAvailable, isRedisAvailable } from "../config/state.js";
 import generateQrCode from "../utils/generateQrCode.js";
 import { env } from "../config/env.js";
-import { addAliasToCF, aliasExistsInCF } from "../utils/redisCommands.js";
+import { addAliasToCF, aliasExistsInCF, removeAliasFromCF } from "../utils/redisCommands.js";
 
 export interface createUrlInput {
     longUrl: string,
@@ -84,7 +84,7 @@ export async function deleteUrlService(shortCode: string, userId: string) {
         const aliasExists = await aliasExistsInCF(shortCode);
         if (aliasExists) {
             //delete from redis
-            await redis.sendCommand(["CF.DEL", SHORTCODE_CUCKOO_FILTER_KEY, shortCode]);
+            await removeAliasFromCF(shortCode);
         }
     }
     return deletedUrl;
@@ -98,6 +98,10 @@ export async function updateUrlService(shortCode: string, userId: string, aliasC
         if (aliasExists) throw new AppError("Alias already exists", 400);
         //update the alias in the database and redis
         const updatedUrl = await updateUrlRepository(shortCode, userId, aliasChanged, urlChanged, newLongUrl, alias);
+        const oldAliasExists = await aliasExistsInCF(shortCode);
+        if (oldAliasExists) {
+            await removeAliasFromCF(shortCode);
+        }
         await addAliasToCF(alias);
         return updatedUrl;
     }
@@ -108,5 +112,14 @@ export async function updateUrlService(shortCode: string, userId: string, aliasC
     else if (aliasChanged && urlChanged && alias && newLongUrl) {
         if (!isRedisAvailable || !isCuckooFilterAvailable) throw new AppError('This feature is not available now', 500)
         const aliasExists = await aliasExistsInCF(alias);
+        if (aliasExists) throw new AppError("Alias already exists", 400);
+        //update the alias and longUrl in the database and redis
+        const updatedUrl = await updateUrlRepository(shortCode, userId, aliasChanged, urlChanged, newLongUrl, alias);
+        const oldAliasExists = await aliasExistsInCF(shortCode);
+        if (oldAliasExists) {
+            await removeAliasFromCF(shortCode);
+        }
+        await addAliasToCF(alias);
+        return updatedUrl;
     }
 }
