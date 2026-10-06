@@ -23,3 +23,12 @@ export async function createUrl (data: createUrlInput) {
     )
     }
 }
+
+export async function deleteUrlRepository(shortCode: string, userId: string) {
+    return prisma.url.delete({
+        where: {
+            shortCode,
+            userId
+        }
+    })
+}

@@ -11,4 +11,6 @@ export const redis = createClient({
     url: REDIS_URL
 });
 
+export const SHORTCODE_CUCKOO_FILTER_KEY = "shortcodes";
+
 redis.on('error', (err) => console.error('Redis Client Error'));

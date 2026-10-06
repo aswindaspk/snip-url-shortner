@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { createUrlService } from "../services/url.service.js";
+import { createUrlService, deleteUrlService, updateUrlService } from "../services/url.service.js";
 import { AppError } from "../error/AppError.js";
 interface UrlInput {
     longUrl: string;
@@ -30,9 +30,25 @@ export async function getUrlDetailsController(req: Request, res: Response, next:
 }
 
 export async function deleteUrlController(req: Request, res: Response, next: NextFunction) {
-
+    const {shortUrl} = req.body
+    const userId = req.user?.id
+    if (shortUrl && userId) {
+        const deletedUrl = await deleteUrlService(shortUrl, userId)
+        if (deletedUrl) {
+            return res.status(200).json({
+                message: "URL deleted successfully"
+            })
+        }
+    }
 }
 
 export async function updateUrlController(req: Request, res: Response, next: NextFunction) {
-    
+    const {shortUrl, newLongUrl, alias, aliasChanged, urlChanged} = req.body
+    const userId = req.user?.id
+    if (shortUrl && userId) {
+        const updatedUrl = await updateUrlService(shortUrl, userId, aliasChanged, urlChanged, newLongUrl, alias)
+        return res.status(200).json({
+            message: "URL updated successfully"
+        })
+    }
 }
