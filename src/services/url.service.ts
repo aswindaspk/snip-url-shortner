@@ -1,8 +1,7 @@
-import { createUrl, deleteUrlRepository, updateUrlRepository } from "../repositories/url.repository.js";
+import { createUrl, deleteUrlRepository, getUserUrlsRepository, updateUrlRepository } from "../repositories/url.repository.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import { AppError } from "../error/AppError.js";
 import generateShortCode from "../utils/generateShortcode.util.js";
-import { redis, SHORTCODE_CUCKOO_FILTER_KEY } from "../config/infra/redis/redis.js";
 import { isCuckooFilterAvailable, isRedisAvailable } from "../config/state.js";
 import generateQrCode from "../utils/generateQrCode.js";
 import { env } from "../config/env.js";
@@ -108,6 +107,7 @@ export async function updateUrlService(shortCode: string, userId: string, aliasC
     else if (urlChanged && newLongUrl) {
         //update the longUrl in the database
         const updatedUrl = await updateUrlRepository(shortCode, userId, aliasChanged, urlChanged, newLongUrl);
+        return updatedUrl;
     }
     else if (aliasChanged && urlChanged && alias && newLongUrl) {
         if (!isRedisAvailable || !isCuckooFilterAvailable) throw new AppError('This feature is not available now', 500)
@@ -122,4 +122,9 @@ export async function updateUrlService(shortCode: string, userId: string, aliasC
         await addAliasToCF(alias);
         return updatedUrl;
     }
+}
+
+export async function getUserUrlsService(userId: string) {
+    const userUrls = await getUserUrlsRepository(userId);
+    console.log("userUrls", userUrls)
 }

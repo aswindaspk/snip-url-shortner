@@ -53,3 +53,34 @@ export async function updateUrlRepository( shortCode: string, userId: string, al
         data,
     });
 }
+
+export async function getUserUrlsRepository(userId: string) {
+    const urlData =  prisma.$transaction([
+        prisma.url.findMany({
+            where: {
+                userId
+            }
+        }),
+        prisma.url.count({
+            where: {
+                userId
+            }
+        }),
+        prisma.url.aggregate({
+            where: {
+                userId
+            },
+            _sum: {
+                clickCount: true
+            }
+        }),
+        prisma.url.count({
+            where: {
+                userId,
+                isActive: true
+            }
+        })
+    ])
+
+    return urlData;
+}

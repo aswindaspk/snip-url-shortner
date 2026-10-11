@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { createUrlService, deleteUrlService, updateUrlService } from "../services/url.service.js";
+import { createUrlService, deleteUrlService, getUserUrlsService, updateUrlService } from "../services/url.service.js";
 import { AppError } from "../error/AppError.js";
 interface UrlInput {
     longUrl: string;
@@ -49,6 +49,16 @@ export async function updateUrlController(req: Request, res: Response, next: Nex
         const updatedUrl = await updateUrlService(shortUrl, userId, aliasChanged, urlChanged, newLongUrl, alias)
         return res.status(200).json({
             message: "URL updated successfully"
+        })
+    }
+}
+
+export async function getuserUrlDetailsController(req: Request, res: Response, next: NextFunction) {
+    const userId = req.user?.id
+    if (userId) {
+        const userData = await getUserUrlsService(userId)
+        return res.status(200).json({
+            userData
         })
     }
 }
