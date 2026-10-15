@@ -8,6 +8,8 @@ RUN npm ci
 
 COPY . .
 
+RUN npx prisma migrate
+
 RUN npx prisma generate
 
 CMD ["npm", "run", "dev"]

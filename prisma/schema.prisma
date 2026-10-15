@@ -8,14 +8,15 @@ datasource db {
 }
 
 model Url {
-  id         Int      @id @default(autoincrement())
-  shortCode  String   @unique @db.VarChar(10)
-  longUrl    String
-  createdAt  DateTime @default(now())
-  clickCount Int      @default(0)
-  isActive   Boolean  @default(true)
-  userId     String? 
-  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          Int      @id @default(autoincrement())
+  shortCode   String   @unique @db.VarChar(10)
+  longUrl     String
+  createdAt   DateTime @default(now())
+  clickCount  Int      @default(0)
+  isActive    Boolean  @default(true)
+  userId      String? 
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clickEvents ClickEvent[]
 
   @@unique([userId,shortCode])
 }
@@ -80,4 +81,12 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+
+model ClickEvent {
+  id        String    @id
+  urlId     Int
+  clickedAt DateTime  @default(now())
+  url     Url         @relation(fields: [urlId], references: [id], onDelete: Cascade)
 }
