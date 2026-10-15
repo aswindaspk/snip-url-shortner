@@ -54,12 +54,14 @@ export async function updateUrlRepository( shortCode: string, userId: string, al
     });
 }
 
-export async function getUserUrlsRepository(userId: string) {
+export async function getUserUrlsRepository(userId: string, page: number, limit: number) {
     const urlData =  prisma.$transaction([
         prisma.url.findMany({
             where: {
                 userId
-            }
+            },
+            skip: (page - 1) * limit,
+            take: limit
         }),
         prisma.url.count({
             where: {

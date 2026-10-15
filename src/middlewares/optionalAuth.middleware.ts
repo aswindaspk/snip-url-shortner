@@ -9,6 +9,7 @@ export async function optionalAuth(req: Request, res: Response, next: NextFuncti
         headers: fromNodeHeaders(req.headers),
     })
     if (!session) {
+        console.log("User is not authenticated");
         return next()
     }
     req.user = session.user;

@@ -124,7 +124,26 @@ export async function updateUrlService(shortCode: string, userId: string, aliasC
     }
 }
 
-export async function getUserUrlsService(userId: string) {
-    const userUrls = await getUserUrlsRepository(userId);
-    console.log("userUrls", userUrls)
+export async function getUserUrlsService(userId: string, page?: string, limit?: string) {
+    const currentPage = page === undefined ? 1 : Number(page);
+    const pageSize = limit === undefined ? 10 : Number(limit);
+
+    const offset = (currentPage - 1) * pageSize;
+    if (
+        !Number.isSafeInteger(currentPage) ||
+        currentPage < 1 ||
+        !Number.isSafeInteger(pageSize) ||
+        pageSize < 1 ||
+        !Number.isSafeInteger(offset)
+    ) {
+        throw new AppError("Page and limit must be positive integers", 400);
+    }
+
+    const [urls, totalUrls, totalClicks, activeUrls] = await getUserUrlsRepository(userId, currentPage, pageSize);
+    return {
+        urls,
+        totalUrls,
+        totalClicks: totalClicks._sum.clickCount,
+        activeUrls
+    };
 }
