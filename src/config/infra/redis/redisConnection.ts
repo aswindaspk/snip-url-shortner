@@ -4,7 +4,7 @@ import { redis } from "./redis.js";
 
 export async function redisConnection() {
     try {
-        await redis.connect();
+        // await redis.connect();
 
         const redisResponse = await redis.ping();
 
