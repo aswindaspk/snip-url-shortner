@@ -8,7 +8,7 @@ export function createQueueConnection() {
     })
 }
 
-export function craeteConsumerConnection() {
+export function createConsumerConnection() {
     return new Redis(env.REDIS_URL, {
         // Consumer requests should wait indefinitely for a response.
         maxRetriesPerRequest: null,
