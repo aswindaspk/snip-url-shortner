@@ -85,8 +85,10 @@ model Verification {
 
 
 model ClickEvent {
-  id        String    @id
+  id        String    @id @default(uuid())
   urlId     Int
   clickedAt DateTime  @default(now())
   url     Url         @relation(fields: [urlId], references: [id], onDelete: Cascade)
+
+  @@map("clickEvent")
 }
