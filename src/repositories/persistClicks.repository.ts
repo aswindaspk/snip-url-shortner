@@ -36,5 +36,6 @@ export async function persistBatch(events: ClickEventJob[]): Promise<void> {
                 })
             }
         }
-    )
+    );
+    console.log("Persisted", events.length, "click events")
 }
