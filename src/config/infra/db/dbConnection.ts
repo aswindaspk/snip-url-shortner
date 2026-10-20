@@ -10,4 +10,3 @@ export default async function databaseConnection() {
         throw error;
     }
 }
-

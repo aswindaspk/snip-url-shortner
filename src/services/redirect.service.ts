@@ -1,6 +1,7 @@
+import { clickEventQueue } from "../config/infra/queues/clickEvent.queue.js";
 import { AppError } from "../error/AppError.js";
 import { getOriginalUrlFromRepository } from "../repositories/redirect.repository.js";
-import { incCounterInRedis } from "../utils/redisCommands.js";
+
 
 export async function getOriginalUrl(shortCode: string) {
     
@@ -8,6 +9,10 @@ export async function getOriginalUrl(shortCode: string) {
     if (!originalUrl) {
         throw new AppError("Original URL not found", 404);
     }
-    await incCounterInRedis(`clicks:${shortCode}`); // Increment the click counter in Redis
+    await clickEventQueue.add("record-click", {
+        eventId: crypto.randomUUID(),
+        urlId: shortCode,
+        clickedAt: new Date().toISOString()
+    });
     return originalUrl;
 }
