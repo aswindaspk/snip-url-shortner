@@ -6,6 +6,12 @@ import { prisma } from "../config/infra/db/prisma.js";
 export const auth = betterAuth({
   secret: env.BETTER_AUTH_SECRET,
 
+  // Persist sign-in across browser restarts for a fixed two days.
+  session: {
+    expiresIn: 60 * 60 * 24 * 2,
+    disableSessionRefresh: true,
+  },
+
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),

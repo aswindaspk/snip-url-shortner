@@ -9,7 +9,7 @@ export async function persistBatch(events: ClickEventJob[]): Promise<void> {
         async (tx: Prisma.TransactionClient) => {
             const inserted = await tx.clickEvent.createManyAndReturn({
                 data: events.map(event=>({
-                    eventId: event.eventId,
+                    id: event.id,
                     urlId: event.urlId,
                     clickedAt: new Date(event.clickedAt)
 

@@ -2,7 +2,7 @@ import { Queue } from "bullmq";
 import { createQueueConnection } from "./queueConnection.js";
 
 export interface ClickEventJob {
-    eventId : string;
+    id : string;
     urlId : string;
     clickedAt : string;
 }

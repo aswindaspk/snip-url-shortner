@@ -14,9 +14,9 @@ export default async function cuckooFilterSyncCheck() {
         }
     });
 
-    await redis.sendCommand(["CF.RESERVE", SHORTCODE_CUCKOO_FILTER_KEY, "1000000"]);
+    await redis.call("CF.RESERVE", SHORTCODE_CUCKOO_FILTER_KEY, "1000000");
     for (const { shortCode } of allShortCodes) {
-        await redis.sendCommand(["CF.ADD", SHORTCODE_CUCKOO_FILTER_KEY, shortCode]);
+        await redis.call("CF.ADD", SHORTCODE_CUCKOO_FILTER_KEY, shortCode);
     }
     console.log("Cuckoo filter rebuilt in Redis with all shortCodes from the database.");
 }

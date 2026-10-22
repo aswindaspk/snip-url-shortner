@@ -10,7 +10,7 @@ export async function getOriginalUrl(shortCode: string) {
         throw new AppError("Original URL not found", 404);
     }
     await clickEventQueue.add("record-click", {
-        eventId: crypto.randomUUID(),
+        id: crypto.randomUUID(),
         urlId: shortCode,
         clickedAt: new Date().toISOString()
     });
