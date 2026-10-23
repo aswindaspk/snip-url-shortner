@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { redis } from "../config/infra/redis/redis.js";
 
 const SLIDING_WINDOW_SCRIPT = `
     local windowInSeconds = toNumber(ARGV[1])
@@ -40,5 +41,19 @@ export function slidingRateLimiter({limit, windowInSeconds, keyPrefix}: RateLimi
     return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const identity = req.user?.id ?? req.ip ?? "unknown"
         const key = `${keyPrefix}:${identity}`
+
+        try {
+            const [estimatedCountRaw,retryAfterRaw] = (await redis.call("EVAL", SLIDING_WINDOW_SCRIPT, "1", key, String(windowInSeconds), String(limit))) as [number | string, number | string]
+            const estimatedCount = Number(estimatedCountRaw);
+            const retryAfter = Number(retryAfterRaw);
+            res.setHeader("RateLimit-Limit", limit)
+            res.setHeader("RateLimit-Remaining", Math.floor(limit - estimatedCount))
+
+
+        }
+        catch(err){
+
+        }
+
     }
 }
