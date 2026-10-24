@@ -61,7 +61,6 @@ export async function getUserUrlsDetailsController(req: Request, res: Response, 
     const {page, limit} = req.query
     if (userId) {
         const userData = await getUserUrlsService(userId, page as string, limit as string)
-        console.log(userData, "userData")
         return res.status(200).json({
             userData
         })

@@ -13,6 +13,5 @@ export async function optionalAuth(req: Request, res: Response, next: NextFuncti
         return next()
     }
     req.user = session?.user;
-    console.log(req.user?.id,"::User")
     next();
 }
