@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { redis } from "../config/infra/redis/redis.js";
+import { error } from "better-auth/api";
 
 const SLIDING_WINDOW_SCRIPT = `
     local windowInSeconds = toNumber(ARGV[1])
@@ -49,10 +50,26 @@ export function slidingRateLimiter({limit, windowInSeconds, keyPrefix}: RateLimi
             res.setHeader("RateLimit-Limit", limit)
             res.setHeader("RateLimit-Remaining", Math.floor(limit - estimatedCount))
 
-
+            if(estimatedCount > limit) {
+                res.setHeader("Retry-After", retryAfter)
+                res.status(429).json(
+                    {
+                        status: "fail",
+                        message: "Too many requests. Try again after some time."
+                    }
+                );
+                return;
+            }
+            next();
         }
         catch(err){
-
+            console.log("Rate limiter Redis error:", error)
+            res.status(503).json(
+                {
+                    status: "fail",
+                    message: "internal Server Error"
+                }
+            );
         }
 
     }
